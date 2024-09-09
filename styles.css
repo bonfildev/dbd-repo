@@ -14,10 +14,18 @@ header {
     color: #fff;
     padding: 1rem 0;
     text-align: center;
+	width: 100%;
 }
 
 main {
-    padding: 2rem;
+    padding: 2rem; 
+	justify-content: center;
+	background-color: #f4f4f4;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; 
+	margin: 0;
 }
 
 .gallery {
@@ -47,4 +55,80 @@ footer {
         flex-direction: column;
         align-items: center;
     }
+}
+
+ /* Estilo básico para la página */
+
+
+h1 {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+/* Centrar los botones y campos de entrada */
+#inputNombre, #inputPrecio {
+	padding: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+
+button {
+	padding: 10px 15px;
+	border: none;
+	background-color: #4CAF50;
+	color: white;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #45a049;
+}
+
+/* Centrar la lista */
+ul {
+	list-style-type: none;
+	padding: 0;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+li {
+	background-color: #ffffff;
+	margin: 10px 0;
+	padding: 15px;
+	border-radius: 5px;
+	width: 600px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo del botón Borrar en la lista */
+li button {
+	padding: 5px 10px;
+	background-color: #ff4d4d;
+	color: white;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+li button:hover {
+	background-color: #e60000;
+}
+
+table {
+    font-family: Arial, sans-serif;
+	background-color: #f4f4f4;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	margin: 0;
 }
