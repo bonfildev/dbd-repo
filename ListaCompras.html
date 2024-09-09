@@ -10,26 +10,29 @@
     <header>
         <h1>Lista de compras</h1>
     </header>
-    <main>  
-        <section class="gallery">
-			<!-- Campos de entrada para agregar al arreglo JSON -->
-			<label for="inputNombre">Nombre (Alfanumérico):</label>
-			<input type="text" id="inputNombre" placeholder="Ingresa nombre">
-			<br/>
-			<label for="inputPrecio">Precio (Moneda):</label>
-			<input type="text" id="inputPrecio" placeholder="Ingresa precio"> 
-			<br/>
-			<button id="agregarDato">Agregar Dato</button>
-			<button id="mostrarDatos">Mostrar Datos</button>
-			<!-- Aquí se agregarán los datos del JSON -->
-			<ul id="lista"></ul>
-			<br/>
-			<ul id="total"></ul>
-		</section>
+	<div>
+		<!-- Campos de entrada para agregar al arreglo JSON --> 
+		<label for="inputNombre">Nombre del producto:</label>
+		<input type="text" id="inputNombre" placeholder="Ingresa nombre">
+		 
+		<br/>
+		<label for="inputPrecio">Precio $:</label>
+		<input type="text" id="inputPrecio" placeholder="Ingresa precio"> 
+		 
+		<button id="agregarDato">Agregar</button>
+		<button id="mostrarDatos">Mostrar</button> 
+		<div>Total:</div>
+		<ul id="total"></ul> 
+		<!-- Aquí se agregarán los datos del JSON -->
+	</div>
+    <main>     
+		<ul id="lista"></ul> 
+		<br/>
     </main>
     <footer>
         <p>&copy; 2024</p>
     </footer>
+
     <script src="scripts.js"></script>
 </body>
 </html>
