@@ -12,15 +12,27 @@
     </header>
     <main>
         <section class="gallery">
-            <img src="image1.jpg" alt="Image 1">
-            <img src="image2.jpg" alt="Image 2">
-            <img src="image3.jpg" alt="Image 3">
+            <img id="1" src="image1.jpg">
+            <img id="2" src="image2.jpg">
+            <img id="3" src="image3.jpg">
         </section>
     </main>
     <footer>
-        <p>&copy; 2024 My Website</p>
+        <p>&copy; 2024</p>
     </footer>
 
-    <script src="scripts.js"></script>
+    <script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const images = document.querySelectorAll('.gallery img');
+		
+		images.forEach(img => {
+			img.addEventListener('click', () => {
+				if(img.id == 1){
+					window.open('ListaCompras.html');
+				}
+			});
+		});
+	});
+	</script>
 </body>
 </html>
