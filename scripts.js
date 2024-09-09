@@ -1,7 +1,5 @@
 // JSON de ejemplo
-let datos = [
-    { id: 1, nombre: '', precio: 0 },
-];
+let datos = [];
 
 // Función para formatear los números como moneda
 function formatearMoneda(valor) {
@@ -12,13 +10,23 @@ function formatearMoneda(valor) {
 function mostrarDatos() {
     const lista = document.getElementById('lista');
     lista.innerHTML = ''; // Limpiar lista
-
     datos.forEach(item => {
         const li = document.createElement('li');
         li.textContent = `ID: ${item.id}, Nombre: ${item.nombre}, Precio: ${formatearMoneda(item.precio)}`;
+        const btn = document.createElement('button'); 
+		btn.textContent = 'Borrar';
+        btn.style.marginLeft = '10px';
+		btn.addEventListener('click', () => borrarDato(item.id));
+        li.appendChild(btn);
         lista.appendChild(li);
     });
 	suma();
+}
+// Función para agregar un nuevo elemento al JSON
+function borrarDato(id) {
+		// Filtrar el arreglo para eliminar el elemento con el ID correspondiente
+		datos = datos.filter(item => item.id !== id);
+		mostrarDatos();
 }
 
 // Función para agregar un nuevo elemento al JSON
@@ -43,7 +51,6 @@ function agregarDato() {
         
         // Mostrar los datos actualizados
         mostrarDatos();
-		suma();
     } else {
         alert('Por favor ingresa un nombre válido y un precio numérico.');
     }
@@ -55,7 +62,7 @@ function suma(){
 	var monto = 0;
 	for (var i = 0; i < datos.length; i++) {
         var obj = datos[i];
-        monto += monto +  obj.precio;
+        monto = monto + obj.precio; 
     }
 	total.innerHTML = formatearMoneda(monto);
 }
