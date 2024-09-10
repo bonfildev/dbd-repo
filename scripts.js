@@ -68,5 +68,5 @@ function suma(){
 }
 
 // Event listeners para los botones
-document.getElementById('mostrarDatos').addEventListener('click', mostrarDatos);
+//document.getElementById('mostrarDatos').addEventListener('click', mostrarDatos);
 document.getElementById('agregarDato').addEventListener('click', agregarDato);
