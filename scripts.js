@@ -1,6 +1,20 @@
 // JSON de ejemplo
 let datos = [];
 
+// Cargar datos desde localStorage al iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    const datosGuardados = localStorage.getItem('datos');
+    if (datosGuardados) {
+        datos = JSON.parse(datosGuardados); // Convertir a JSON
+        mostrarDatos(); // Mostrar los datos al cargar la página
+    }
+});
+
+// Guardar datos en localStorage cada vez que se agregue o elimine un dato
+function guardarEnLocalStorage() {
+    localStorage.setItem('datos', JSON.stringify(datos)); // Guardar como string
+}
+
 // Función para formatear los números como moneda
 function formatearMoneda(valor) {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(valor);
@@ -23,10 +37,20 @@ function mostrarDatos() {
 	suma();
 }
 // Función para agregar un nuevo elemento al JSON
-function borrarDato(id) {
+/*function borrarDato(id) {
 		// Filtrar el arreglo para eliminar el elemento con el ID correspondiente
 		datos = datos.filter(item => item.id !== id);
 		mostrarDatos();
+}*/
+// Actualizar la función borrarDato para guardar al eliminar
+function borrarDato(id) {
+    const index = datos.findIndex(item => item.id === id);
+    if (index !== -1) {
+        datos.splice(index, 1);
+    }
+    
+    mostrarDatos();
+    guardarEnLocalStorage(); // Guardar los datos actualizados
 }
 
 // Función para agregar un nuevo elemento al JSON
@@ -51,6 +75,8 @@ function agregarDato() {
         
         // Mostrar los datos actualizados
         mostrarDatos();
+        // Guardar en localStorage
+        guardarEnLocalStorage();
     } else {
         alert('Por favor ingresa un nombre válido y un precio numérico.');
     }
