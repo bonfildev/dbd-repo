@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Expense Tracker</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 1rem;
+      max-width: 960px;
+      margin: auto;
+      background-color: #300a24;
+      color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    input, select, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background-color: #2a2a2a;
+      color: #f5f5f5;
+    }
+
+    .half {
+      flex: 1 1 45%;
+    }
+
+    .full {
+      flex: 1 1 100%;
+    }
+
+    button {
+      background-color: #007bff;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .export-btn {
+      background-color: #28a745;
+      margin-top: 0.5rem;
+    }
+
+    .group {
+      margin-top: 1.5rem;
+    }
+
+    .group h3 {
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1a1a1a;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: #2c2c2c;
+      cursor: pointer;
+    }
+
+    th.sortable:hover {
+      background-color: #3c3c3c;
+    }
+
+    tr.charge td {
+      color: red;
+    }
+
+    tr.credit td {
+      color: #39ff14;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #dc3545;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      color: #ff4b5c;
+    }
+
+    .group-total {
+      font-weight: bold;
+      padding: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-positive {
+      color: #39ff14;
+    }
+
+    .total-negative {
+      color: red;
+    }
+
+    .grand-total {
+      text-align: right;
+      font-size: 1.5rem;
+      margin-top: 1rem;
+      border-top: 1px solid #444;
+      padding-top: 0.5rem;
+    }
+
+    .icon {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    #lang-select {
+      margin-bottom: 1rem;
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+
+<h1 id="title">Expense Tracker</h1>
+
+<div style="text-align:right;">
+  <label for="lang-select">🌐 <span id="languageLabel">Language:</span></label>
+  <select id="lang-select">
+    <option value="en">English</option>
+    <option value="es">Español</option>
+  </select>
+</div>
+
+<form id="entry-form">
+  <div class="row">
+    <input type="date" id="date" class="half" />
+    <input type="text" id="description" class="full" placeholder="Description" required />
+  </div>
+  <div class="row">
+    <select id="type" class="half" required>
+      <option value="charge">Charge</option>
+      <option value="credit">Credit</option>
+    </select>
+    <input type="number" id="amount" class="half" placeholder="Amount" required step="0.01" />
+  </div>
+  <button type="submit" id="addBtn">Add Entry</button>
+  <button type="button" class="export-btn" onclick="exportToCSV()" id="exportBtn">⬇️ Export CSV</button>
+</form>
+
+<div id="entries-container"></div>
+<div class="grand-total" id="total-display">Total: $0.00</div>
+
+<script>
+  let entries = [];
+  let sortKey = "date";
+  let sortAsc = true;
+  let lang = "en";
+
+  const translations = {
+    en: {
+      title: "Expense Tracker",
+      language: "Language:",
+      description: "Description",
+      charge: "Charge",
+      credit: "Credit",
+      amount: "Amount",
+      add: "Add Entry",
+      export: "⬇️ Export CSV",
+      noDate: "No Date",
+      groupTotal: "Group Total",
+      grandTotal: "Grand Total",
+      type: "Type",
+      action: "Action",
+    },
+    es: {
+      title: "Registro de Gastos",
+      language: "Idioma:",
+      description: "Descripción",
+      charge: "Cargo",
+      credit: "Crédito",
+      amount: "Monto",
+      add: "Agregar Entrada",
+      export: "⬇️ Exportar CSV",
+      noDate: "Sin Fecha",
+      groupTotal: "Total del Grupo",
+      grandTotal: "Total General",
+      type: "Tipo",
+      action: "Acción",
+    }
+  };
+
+  function updateLanguage() {
+    const t = translations[lang];
+    document.getElementById("title").textContent = t.title;
+    document.getElementById("description").placeholder = t.description;
+    document.getElementById("amount").placeholder = t.amount;
+    document.getElementById("addBtn").textContent = t.add;
+    document.getElementById("exportBtn").textContent = t.export;
+    document.getElementById("languageLabel").textContent = t.language;
+    document.querySelector("#type option[value='charge']").textContent = t.charge;
+    document.querySelector("#type option[value='credit']").textContent = t.credit;
+
+    renderEntries();
+  }
+
+  document.getElementById("lang-select").addEventListener("change", e => {
+    lang = e.target.value;
+    updateLanguage();
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const stored = localStorage.getItem("entries");
+    if (stored) entries = JSON.parse(stored);
+
+    // Default date to today
+    const dateInput = document.getElementById("date");
+    if (dateInput) dateInput.valueAsDate = new Date();
+
+    updateLanguage();
+  });
+
+  document.getElementById("entry-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const date = document.getElementById("date").value || null;
+    const description = document.getElementById("description").value.trim();
+    const type = document.getElementById("type").value;
+    const amount = parseFloat(document.getElementById("amount").value);
+    if (!description || isNaN(amount)) return;
+
+    entries.push({ date, description, type, amount });
+    saveAndRender();
+    e.target.reset();
+    document.getElementById("date").valueAsDate = new Date(); // Reset date to today
+  });
+
+  function groupByDate(data) {
+    const grouped = {};
+    data.forEach(entry => {
+      const key = entry.date || translations[lang].noDate;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(entry);
+    });
+    return grouped;
+  }
+
+  function renderEntries() {
+    const container = document.getElementById("entries-container");
+    container.innerHTML = "";
+
+    const sorted = [...entries].sort((a, b) => {
+      let valA = a[sortKey] || "";
+      let valB = b[sortKey] || "";
+      if (sortKey === "amount") {
+        return sortAsc ? valA - valB : valB - valA;
+      }
+      return sortAsc
+        ? valA.toString().localeCompare(valB.toString())
+        : valB.toString().localeCompare(valA.toString());
+    });
+
+    const groups = groupByDate(sorted);
+    let grandTotal = 0;
+    const t = translations[lang];
+
+    for (const date in groups) {
+      const group = groups[date];
+      const section = document.createElement("div");
+      section.className = "group";
+      section.innerHTML = `<h3>${date}</h3>`;
+
+      const groupTotal = group.reduce((sum, entry) =>
+        entry.type === "credit" ? sum + entry.amount : sum - entry.amount, 0);
+      grandTotal += groupTotal;
+
+      const totalDiv = document.createElement("div");
+      totalDiv.className = `group-total ${groupTotal >= 0 ? 'total-positive' : 'total-negative'}`;
+      totalDiv.textContent = `${t.groupTotal}: $${groupTotal.toFixed(2)}`;
+      section.appendChild(totalDiv);
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th class="sortable" onclick="setSort('description')">${t.description} <span class="icon">${sortKey === 'description' ? (sortAsc ? '⬆️' : '⬇️') : ''}</span></th>
+          <th class="sortable" onclick="setSort('type')">${t.type} <span class="icon">${sortKey === 'type' ? (sortAsc ? '⬆️' : '⬇️') : ''}</span></th>
+          <th class="sortable" onclick="setSort('amount')">${t.amount} <span class="icon">${sortKey === 'amount' ? (sortAsc ? '⬆️' : '⬇️') : ''}</span></th>
+          <th>${t.action}</th>
+        </tr>
+      `;
+      const tbody = document.createElement("tbody");
+
+      group.forEach(entry => {
+        const row = document.createElement("tr");
+        row.className = entry.type;
+
+        row.innerHTML = `
+          <td>${entry.description}</td>
+          <td>${entry.type === 'charge' ? '➖ ' + t.charge : '➕ ' + t.credit}</td>
+          <td>$${entry.amount.toFixed(2)}</td>
+          <td><button class="delete-btn" onclick="deleteEntry(${entries.indexOf(entry)})">🗑️</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      section.appendChild(table);
+      container.appendChild(section);
+    }
+
+    document.getElementById("total-display").innerHTML =
+      `${t.grandTotal}: <span class="${grandTotal >= 0 ? 'total-positive' : 'total-negative'}">$${grandTotal.toFixed(2)}</span>`;
+  }
+
+  function setSort(key) {
+    if (sortKey === key) sortAsc = !sortAsc;
+    else {
+      sortKey = key;
+      sortAsc = true;
+    }
+    renderEntries();
+  }
+
+  function deleteEntry(index) {
+    entries.splice(index, 1);
+    saveAndRender();
+  }
+
+  function saveAndRender() {
+    localStorage.setItem("entries", JSON.stringify(entries));
+    renderEntries();
+  }
+
+  function exportToCSV() {
+    const t = translations[lang];
+    let csv = `${t.date || "Date"},${t.description},${t.type},${t.amount}\n`;
+    entries.forEach(entry => {
+      csv += `"${entry.date || ''}","${entry.description}","${entry.type}","${entry.amount}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "expenses.csv";
+    a.click();
+  }
+</script>
+
+</body>
+</html>
