@@ -1,4 +1,4 @@
-Mi CV </br>
+Mi CV 
 <a>https://bonfildev.github.io/dbd-repo/</a>
 </br>
 Lista de compras 
